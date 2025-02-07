@@ -16,16 +16,20 @@ function App() {
 
   const [votes, setVotes] = useState({});
 
-  const [timer, setTimer] = useState(30);
+  const options = [0, 1, 1, 2, 3, 5, 8, 13, 21];
   const [reveal, setReveal] = useState(false);
 
-  useEffect(() => {
-    const countdown = setInterval(() => {
-      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
+  const calculateAverage = () => {
+    const totalVotes = Object.entries(votes).reduce((acc, [key, value]) => acc + key * value, 0);
+    const totalCount = Object.values(votes).reduce((acc, value) => acc + value, 0);
+    return totalCount ? (totalVotes / totalCount).toFixed(2) : 0;
+  };
 
-    return () => clearInterval(countdown);
-  }, []);
+  const resetVotes = () => {
+    setVotes({});
+    setReveal(false);
+  };
+
 
   useEffect(() => {
     if (timer === 0) {
@@ -48,13 +52,17 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <img src={require('./rock_pillow.jpg')} className="App-logo" alt="The Rock Pillow" />
         <div>
-          <button onClick={() => handleVote('option1')}>Vote for Option 1</button>
-          <button onClick={() => handleVote('option2')}>Vote for Option 2</button>
+          {options.map((option) => (
+            <button key={option} onClick={() => handleVote(option)} className="poker-card">
+              {option}
+            </button>
+          ))}
+          <button onClick={resetVotes} className="reset-button">Reset Votes</button>
         </div>
         <div>
-          <h2>Time Remaining: {timer} seconds</h2>
+          {reveal && <h2>Average Vote: {calculateAverage()}</h2>}
           {reveal && <h2>Final Vote Counts:</h2>}
           {!reveal && <h2>Vote Counts:</h2>}
 
